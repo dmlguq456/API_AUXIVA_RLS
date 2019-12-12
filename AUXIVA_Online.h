@@ -1,4 +1,4 @@
-#define Nch			2
+#define Nch			3
 #define nWin		2048
 #define alpha			0.96
 #define BufferSize		512

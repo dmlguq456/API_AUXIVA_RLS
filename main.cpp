@@ -9,7 +9,7 @@ void usage(void)
 {
 	// Error function in case of incorrect command-line
 	// argument specifications
-	cout << "\nuseage: AUXIVA_Online_APIver.exe x_2x2_S(N)_ch1.wav x_2x2_S(N)_ch2.wav \n";
+	cout << "\nuseage: AUXIVA_Online_APIver.exe x_3x3_S(N)_ch1.wav x_3x3_S(N)_ch2.wav x_3x3_S(N)_ch3.wav \n";
 	cout << "N is # of mixing signal.\n";
 	exit(0);
 }
