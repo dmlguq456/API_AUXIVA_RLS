@@ -12,7 +12,7 @@ AUXIVA::AUXIVA()
 	nfreq = nfft / 2 + 1;
 	//epsi = 0.000001;
 	epsi = 2.220446049250313*1E-16;
-	f_alpha = 0.96;
+	f_alpha = 0.99;
 
 	int i, j, k, freq, ch;
 	int re, im;
@@ -381,8 +381,8 @@ void AUXIVA::AUXIVA_lemma(double **input, int frameInd, double **output)
 			Y[ch1][im] = 0.0;
 			for (ch2 = 0; ch2 < Nch; ch2++) 
 			{
-				Y[ch1][re] = Y[ch1][re] + W[ch1][ch2][re] * X[ch2][re] - W[ch1][ch2][im] * X[ch2][im];
-				Y[ch1][im] = Y[ch1][im] + W[ch1][ch2][re] * X[ch2][im] + W[ch1][ch2][im] * X[ch2][re];
+				Y[ch1][re] += W[ch1][ch2][re] * X[ch2][re] - W[ch1][ch2][im] * X[ch2][im];
+				Y[ch1][im] += W[ch1][ch2][re] * X[ch2][im] + W[ch1][ch2][im] * X[ch2][re];
 			}
 		}
 	}
@@ -633,8 +633,8 @@ void AUXIVA::AUXIVA_lemma(double **input, int frameInd, double **output)
 					{
 						if (ch1 == ch2)
 						{
-							A[ch1][ch2][re] = W[ch1][ch2][re] / ((W[ch1][ch2][re]*W[ch1][ch2][re]) + (W[ch1][ch2][im]*W[ch1][ch2][im]));
-							A[ch1][ch2][im] = -W[ch1][ch2][im] / ((W[ch1][ch2][re]*W[ch1][ch2][re]) + (W[ch1][ch2][im]*W[ch1][ch2][im]));
+							A[ch1][ch2][re] = W[ch1][ch2][re] / (W[ch1][ch2][re]*W[ch1][ch2][re] + W[ch1][ch2][im]*W[ch1][ch2][im]);
+							A[ch1][ch2][im] = -W[ch1][ch2][im] / (W[ch1][ch2][re]*W[ch1][ch2][re] + W[ch1][ch2][im]*W[ch1][ch2][im]);
 						}
 						else
 						{
@@ -668,8 +668,8 @@ void AUXIVA::AUXIVA_lemma(double **input, int frameInd, double **output)
 						Adenom[ch1][ch2][im] = 0.0;
 						for (ch3 = 0; ch3 < Nch; ch3++)
 						{
-							Adenom[ch1][ch2][re] = Adenom[ch1][ch2][re] + AdW[ch1][ch3][re] * A[ch3][ch2][re] - AdW[ch1][ch3][im] * A[ch3][ch2][im];
-							Adenom[ch1][ch2][im] = Adenom[ch1][ch2][im] + AdW[ch1][ch3][re] * A[ch3][ch2][im] + AdW[ch1][ch3][im] * A[ch3][ch2][re];
+							Adenom[ch1][ch2][re] += AdW[ch1][ch3][re] * A[ch3][ch2][re] - AdW[ch1][ch3][im] * A[ch3][ch2][im];
+							Adenom[ch1][ch2][im] += AdW[ch1][ch3][re] * A[ch3][ch2][im] + AdW[ch1][ch3][im] * A[ch3][ch2][re];
 						}
 					}
 				}
@@ -677,8 +677,8 @@ void AUXIVA::AUXIVA_lemma(double **input, int frameInd, double **output)
 				Anumer[im] = 0;
 				for (ch2 = 0; ch2 < Nch; ch2++)
 				{
-					Anumer[re] = Anumer[re] + dW[ch][ch2][re] * A[ch2][ch][re] - dW[ch][ch2][im] * A[ch2][ch][im];
-					Anumer[im] = Anumer[im] + dW[ch][ch2][re] * A[ch2][ch][im] + dW[ch][ch2][im] * A[ch2][ch][re];
+					Anumer[re] += dW[ch][ch2][re] * A[ch2][ch][re] - dW[ch][ch2][im] * A[ch2][ch][im];
+					Anumer[im] += dW[ch][ch2][re] * A[ch2][ch][im] + dW[ch][ch2][im] * A[ch2][ch][re];
 				}
 				if (sqrt((Anumer[re]*Anumer[re]) + (Anumer[im]*Anumer[im])) < epsi)
 				{
@@ -690,8 +690,8 @@ void AUXIVA::AUXIVA_lemma(double **input, int frameInd, double **output)
 				{
 					for (ch2 = 0; ch2 < Nch; ch2++)
 					{
-						A[ch1][ch2][re] = A[ch1][ch2][re] - (Adenom[ch1][ch2][re] * Anumer[re] + Adenom[ch1][ch2][im] * Anumer[im]) / ((Anumer[re]*Anumer[re]) + (Anumer[im]*Anumer[im]));
-						A[ch1][ch2][im] = A[ch1][ch2][im] - (Adenom[ch1][ch2][im] * Anumer[re] - Adenom[ch1][ch2][re] * Anumer[im]) / ((Anumer[re]*Anumer[re]) + (Anumer[im]*Anumer[im]));
+						A[ch1][ch2][re] = A[ch1][ch2][re] - (Adenom[ch1][ch2][re] * Anumer[re] + Adenom[ch1][ch2][im] * Anumer[im]) / (Anumer[re] * Anumer[re] + Anumer[im] * Anumer[im]);
+						A[ch1][ch2][im] = A[ch1][ch2][im] - (Adenom[ch1][ch2][im] * Anumer[re] - Adenom[ch1][ch2][re] * Anumer[im]) / (Anumer[re] * Anumer[re] + Anumer[im] * Anumer[im]);
 					}
 				}
 
@@ -719,23 +719,23 @@ void AUXIVA::AUXIVA_lemma(double **input, int frameInd, double **output)
 			Ytmp[ch1][im] = 0.0;
 			for (ch2 = 0; ch2 < Nch; ch2++)
 			{
-				Ytmp[ch1][re] = Ytmp[ch1][re] + Wbp[ch1][ch2][re] * X[ch2][re] - Wbp[ch1][ch2][im] * X[ch2][im];
-				Ytmp[ch1][im] = Ytmp[ch1][im] + Wbp[ch1][ch2][re] * X[ch2][im] + Wbp[ch1][ch2][im] * X[ch2][re];
+				Ytmp[ch1][re] += Wbp[ch1][ch2][re] * X[ch2][re] - Wbp[ch1][ch2][im] * X[ch2][im];
+				Ytmp[ch1][im] += Wbp[ch1][ch2][re] * X[ch2][im] + Wbp[ch1][ch2][im] * X[ch2][re];
 			}
 		}
-	}
 
+	}
 	for (ch1 = 0; ch1 < Nch; ch1++)
 	{
 		hfft3(Ytmp[ch1], nfft, -1);
 		for (i = 0; i < nWin - BufferSize; i++)
 		{
 			Ybuff[ch1][i] = Ybuff[ch1][BufferSize + i];
-			Ybuff[ch1][i] += Ytmp[ch1][i];
+			Ybuff[ch1][i] += Ytmp[ch1][i]* win_STFT[i];
 		}
 		for (; i < nWin; i++)
 		{
-			Ybuff[ch1][i] = Ytmp[ch1][i];
+			Ybuff[ch1][i] = Ytmp[ch1][i]* win_STFT[i];
 		}
 	}
 
