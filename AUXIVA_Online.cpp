@@ -408,6 +408,7 @@ void AUXIVA::AUXIVA_lemma(double **input, int frameInd, double **output)
 	for (i = 0; i < Nch; i++)
 	{
 		r[i] = sqrt(sum_Pwr[i]);
+		if (r[i] < 1e-6) r[i] = 1e-6;
 		p[i] = (1 - f_alpha) / r[i];
 	}
 
