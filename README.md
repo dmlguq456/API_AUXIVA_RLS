@@ -15,7 +15,7 @@
 
 ## Setting Parameter in AUXIVA_Online.h
 
-```
+```cpp
 #define Nch			2
 #define nWin		2048
 #define BufferSize		512
@@ -30,8 +30,6 @@
 ## Build
 
 x64로 빌드를 진행합니다.
-
-## Execution
 
 ### **BSS API**
 
