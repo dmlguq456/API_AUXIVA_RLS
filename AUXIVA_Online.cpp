@@ -12,7 +12,7 @@ AUXIVA::AUXIVA()
 	nfreq = nfft / 2 + 1;
 	//epsi = 0.000001;
 	epsi = 2.220446049250313*1E-16;
-	f_alpha = 0.98;
+	f_alpha = 0.96;
 
 	int i, j, k, freq, ch;
 	int re, im;
