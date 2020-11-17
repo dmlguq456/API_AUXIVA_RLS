@@ -1,5 +1,4 @@
 #define _CRT_SECURE_NO_WARNINGS
-#define MAKE_FILE		1
 
 #include <stdio.h>
 #include "ProcBuffers.h"
